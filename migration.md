@@ -162,7 +162,7 @@ The **FormsModule** is also **web specific**, the equivalent module in {N} is **
 import { NativeScriptFormsModule } from 'nativescript-angular/forms';
 ```
 
-Your **app.module.tns.ts** will already contain a commented out import of **NativeScriptModule**. Just uncomment it and it to the **NgModule imports**.
+Your **app.module.tns.ts** will already contain a commented out import of **NativeScriptFormsModule**. Just uncomment it and add it to the **NgModule imports**.
 
 **AppRoutingModule**
 
@@ -184,7 +184,7 @@ The **HttpClientModule** is **web specific**, the equivalent module in {N} is **
 import { NativeScriptHttpClientModule } from 'nativescript-angular/http-client';
 ```
 
-Your **app.module.tns.ts** will already contain a commented out import of **NativeScriptModule**. Just uncomment it and it to the **NgModule imports**.
+Your **app.module.tns.ts** will already contain a commented out import of **NativeScriptHttpClientModule**. Just uncomment it and add it to the **NgModule imports**.
 
 **HttpClientInMemoryWebApiModule**
 
@@ -764,11 +764,11 @@ However, for this project you can easily work with a single **routes** configura
 
 To achieve that, you need to move the **routes** configuration to a shared file, and move, import and use the shared routes.
 
-### Step 1 - Create a shared file routes file.
+### Step 1 - Create a shared routes file.
 
-Create a new file called **app.routes.ts** and copy the **routes** configuration from **app-routing.module.ts**.
+Create a new file called **app.routes.ts** and copy the **routes** array from **app-routing.module.ts**.
 
-Make sure to **export** routes, and also import all the components
+Make sure to **export** routes, and also import all the components.
 
 **app.routes.ts**
 
@@ -786,7 +786,7 @@ export const routes: Routes = [
 ];
 ```
 
-### Step 2 - Update both **app-routing** with the shared **routes** property
+### Step 2 - Update both **app-routing** files with the shared **routes** property
 
 Replace the **routes** property definition with the imported one from **'./app.routes'** in both **app-routing** files. Then clean up any unused imports.
 
@@ -803,7 +803,7 @@ import { routes } from './app.routes';
   ],
   exports: [
     RouterModule
-  ],
+  ]
 })
 export class AppRoutingModule { }
 ```
@@ -816,8 +816,12 @@ import { NativeScriptRouterModule } from 'nativescript-angular/router';
 import { routes } from './app.routes';
 
 @NgModule({
-  imports: [NativeScriptRouterModule.forRoot(routes)],
-  exports: [NativeScriptRouterModule]
+  imports: [
+    NativeScriptRouterModule.forRoot(routes)
+  ],
+  exports: [
+    NativeScriptRouterModule
+  ]
 })
 export class AppRoutingModule { }
 ```
