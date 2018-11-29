@@ -1,12 +1,12 @@
-<h1>NativeScript Tour of Heroes tutorial</h1>
+<h1>NativeScript Tour of Heroes migration</h1>
 
-> Welcome to the NativeScript Tour of Heroes tutorial! You will learn how to extend your web Angular applications with mobile applications for Android and iOS. 
+> Welcome to the NativeScript Tour of Heroes migration tutorial! You will learn how to extend your web Angular projects with mobile applications for Android and iOS. 
 
 # Preparation
 
 ## NativeScript setup
 
-For the purposes of this tutorial you will need the NativeScript CLI and a physical Android or iOS device.
+For completing the tutorial you will need the NativeScript CLI and a physical Android or iOS device.
 
 1. To install the NativeScript CLI, run the following command:
 
@@ -43,7 +43,7 @@ npm install
 
 # Converting the project to a code-sharing structure
 
-The **ng add** command, provided by the Angular CLI, allows us to add different capabilities to our Angular projects. A few examples of capabilities available through **ng add** are - Angular material, ngRx, Firebase, Angular Apollo, and, of course - NativeScript.
+The **ng add** command, provided by the Angular CLI, allows you to add different capabilities to your Angular projects. A few examples of capabilities available through **ng add** are - Angular material, ngRx, Firebase, Angular Apollo, and, of course - NativeScript.
 You can use **ng add** to convert the web project into a Web+NativeScript Code-Sharing project structure.  Just run the following command from inside the project:
 
 ```bash
@@ -93,11 +93,12 @@ In your migrated project you can find two different routing `NgModule`s:
 
 > The code-sharing project uses a naming convention to differentiate between the files for web and mobile. The NativeScript-specific files have a `.tns` suffix. You can learn more about it in the NativeScript docs on [code-splitting](https://docs.nativescript.org/angular/code-sharing/code-splitting).
 
-If you open **app-routing.module.tns.ts**, you will notice that NativeScript imports **NativeScriptRouterModule**. This module is a wrapper around the **RouterModule** provided by Angular. NativeScript extends the default Angular router with a few mobile-specific features, such as animated transitions between pages.
+If you open **app-routing.module.tns.ts**, you will notice that NativeScript imports **NativeScriptRouterModule**. This module is a wrapper around the **RouterModule** provided by Angular. NativeScript extends the default Angular router with a few mobile-specific features, such as animated transitions between screens.
 
-You will also see a **routes** array. It contains a single path, leading to the **HomeComponent**. Later in the tutorial, we will move the **routes** to a common file, shared between the web and the native routing `NgModule`s.
+You will also see a **routes** array. It contains a single path, leading to the **HomeComponent**. Later in the tutorial, we will move the **routes** to a common file, shared between the web and the mobile `NgModule`s.
 
 <h1>Migrating the Project Content</h1>
+
 The **ng add @nativescript/schematics** command converts the project to a code-sharing structure. However, it doesn't convert your application logic. Enough auto generation! It's time to get your hands dirty and write some real code!
 
 The next steps from here are to:
@@ -118,10 +119,9 @@ The migration of the root `NgModule` (usually named `AppModule`) involves findin
 
 Let's have a look at the imports in the metadata of our web `NgModule`.
 
-```TypeScript
-// app.module.ts
+**app.module.ts**
 
-// ...
+```TypeScript
 imports: [
   BrowserModule,
   FormsModule,
@@ -136,8 +136,8 @@ imports: [
 
 Transforming module **imports** means that you need to move the imports from the web file (`app.module.ts`) to the mobile file (`app.module.tns.ts`). For each import you need to check:
 
-* if this is a **generic import** - meaning it works for both web and {N} - then just add it to the **app.module.tns.ts**;
-* if this is a web specific import - then we need to find a **{N} equivalent** and add it to the **app.module.tns.ts**.
+* if this is a **platform-agnostic import** - meaning it works for both web and {N} - then just add it to the **app.module.tns.ts**;
+* if this is a web-specific import - then we need to find a **{N} equivalent** and add it to the **app.module.tns.ts**.
 
 ### **BrowserModule**
 
@@ -151,10 +151,10 @@ The equivalent module in {N} is **NativeScriptFormsModule**. Your **app.module.t
 
 ### **AppRoutingModule**
 
-At this stage you will have two versions of the **AppRoutingModule**:
+At this stage you have two versions of the **AppRoutingModule**:
 
-* Web - **app-routing.module.ts** - which will contain the **routes** to navigate to all your web components,
-* {N} - **app-routing.module.tns.ts** - which will contain the **routes** to navigate to the sample **HomeComponent**.
+* Web - **app-routing.module.ts** - contains the **routes** to navigate to all your web components,
+* {N} - **app-routing.module.tns.ts** - contains the **routes** to navigate to the sample **HomeComponent**.
 
 We will cover the navigation in more details later on and we will discuss the options to bring both configurations in one place.
 However, at this stage of the migration process it is better to keep them separately.
@@ -163,7 +163,8 @@ Your **app.module.tns.ts** already contains an import of the **{N} AppRoutingMod
 
 ### **HttpClientModule**
 
-The **HttpClientModule** is not really **web specific**. You can use it in your mobile application as well. However, NativeScript has a similar `NgModule` - the `NativeScriptHttpClientModule`. It extends the default Angular HTTP client with a few mobile specific features. We recommend you to always use the {N} module in your mobile apps.
+The **HttpClientModule** is not really **web specific**. You can use it in your mobile application as well. However, NativeScript has a similar `NgModule` - the `NativeScriptHttpClientModule`. It extends the default Angular HTTP client with a few mobile features. We recommend you to always use the {N} module in your mobile apps.
+
 Your **app.module.tns.ts** already contains a commented out import of **NativeScriptHttpClientModule**. Just uncomment it and add it to the **NgModule imports**.
 
 ### **HttpClientInMemoryWebApiModule** and **InMemoryDataService**
@@ -172,11 +173,11 @@ The **HttpClientInMemoryWebApiModule** and **InMemoryDataService** are platform-
 
 ## Module Imports Summary
 
-This is how your imports in **app.module.tns.ts** should look like:
+This is how your NativeScript **imports** should look like:
+
+**app.module.tns.ts**
 
 ```TypeScript
-// app.module.tns.ts
-
 import { NativeScriptModule } from 'nativescript-angular/nativescript.module';
 import { NativeScriptFormsModule } from 'nativescript-angular/forms';
 import { NativeScriptHttpClientModule } from 'nativescript-angular/http-client';
@@ -278,17 +279,17 @@ export const routes: Routes = [
 
 You should see a simple screen with a message: *Heroes Component works*.
 > If you don't see the changes, try rebuilding the app. Stop the current process in the terminal and run the preview command again:
-```
-tns preview --bundle
-```
+> ```
+> tns preview --bundle
+> ```
 
 #### Update the Template
 
-It's time to build our first mobile screen!
+It's time to build your first mobile UI screen!
 
-> The NativeScript UI components are a broad topic and we can't waste our precious tutorial time diving deep into them. If you are eager to learn more, check out these materials:
-  * There is also an [interactive tutorial for {N} layouts](https://www.nslayouts.com/);
-  * [UI Widgets](https://docs.nativescript.org/angular/ui/ng-ui-widgets/action-bar).
+> The NativeScript UI components are a broad topic and we won't waste our precious tutorial time diving deep into them. If you are eager to learn more, check out these materials:
+>  * [The interactive tutorial for {N} layouts](https://www.nslayouts.com/);
+>  * [UI Widgets](https://docs.nativescript.org/angular/ui/ng-ui-widgets/action-bar).
 
 Alright, let's get started! The html template looks like this:
 
@@ -301,7 +302,6 @@ Alright, let's get started! The html template looks like this:
   <label>Hero name:
     <input #heroName />
   </label>
-  <!-- (click) passes input value to add() and then clears the input -->
   <button (click)="add(heroName.value); heroName.value=''">
     add
   </button>
@@ -344,7 +344,6 @@ Then you have a `div` container with a label, an input field and a button.
   <label>Hero name:
     <input #heroName />
   </label>
-  <!-- (click) passes input value to add() and then clears the input ->
   <button (click)="add(heroName.value); heroName.value=''">
     add
   </button>
@@ -411,9 +410,9 @@ Like this:
 
 Finally, you need to wrap the `GridLayout` and the `ListView` in a `StackLayout`.
 
-> Please note that besides the **ActionBar**, a NativeScript template (this also applies to **ng-template**) can only contain one component. This is why you need a Layout container, which contains all the other components.
+> Please note that besides the **ActionBar**, a NativeScript template can only contain one component. This is why you need a Layout container to wrap all the other components.
 
-The full template should look something like this:
+The full template should look like this:
 
 **heroes.component.tns.html**
 
@@ -440,41 +439,75 @@ The full template should look something like this:
 </StackLayout>
 ```
 
-<!--#### Update the Styling
+#### Update the Styling
 
-Then, update the {N} styling.
-
-**heroes.component.tns.css**
+You can style NativeScript UI with CSS. To make the above component more appealing, copy the CSS below to **heroes.component.tns.css**.
 
 ```CSS
-// need to get the style here
-```-->
+.container {
+  background-color: #EFEFF4;
+}
 
-#### Heroes Component Ready
+.search-container {
+  padding: 15;
+}
 
-This is how you migrate the **HeroesComponent**.
-Your mobile app should look something like this:
-<!--TODO: prepare the GIFs -->
-> Android GIF
-> 
-> iOS GIF
+.search-container TextField {
+  color: #757575;
+  padding-left: 10;
+  font-size: 20;
+}
 
+.search-container Button {
+  background-color: #30CE91;
+  color: white;
+  font-size: 18;
+  padding: 10 30;
+  border-radius: 20;
+}
 
-## Migrate HeroDetailComponent
+ListView {
+  background-color: transparent;
+  separator-color: transparent;
+}
+
+.hero-container {
+  background-color: white;
+  border-radius: 10;
+  margin: 10 15;
+  padding: 15;
+
+}
+.circle {
+  background-color: #C6D7FE;
+  color: #2A48CD;
+}
+
+.hero-label {
+  font-weight: bold;
+  font-size: 18;
+  margin-left: 10;
+}
+
+.delete-button {
+  font-size: 24;
+  font-weight: normal;
+}
+```
+
+## Migrate `HeroDetailComponent`
 
 Next up you should migrate the **HeroDetailComponent**.
 
 The steps are the same as before.
 
-1. migrate the component:
+1. Run the migration command.
 	
 	```bash
 	ng g migrate-component --name=hero-detail
 	```
 	
-1. update the navigation
-
-	Add a path for the **HeroDetailComponent** to the routes:
+1. Register the new component in the mobile routing configuration.
 
 	**app-routing.module.tns.ts**
 
@@ -488,154 +521,260 @@ The steps are the same as before.
 	];
 	```
 
-1.  update the NativeScript template
+1. Update the NativeScript template
 
-	<!--
-	```html
-	<div *ngIf="hero">
-	  <h2>{{hero.name | uppercase}} Details</h2>
-	  <div><span>id: </span>{{hero.id}}</div>
-	  <div>
-	    <label>name:
-	      <input [(ngModel)]="hero.name" placeholder="name"/>
-	    </label>
-	  </div>
-	  <button (click)="goBack()">go back</button>
-	  <button (click)="save()">save</button>
-	</div>
-	```
--->
-	**hero-detail.component.tns.html**
+**hero-detail.component.tns.html**
 
-	```html
-	<ActionBar title="{{hero?.name | uppercase}} Details" icon="" class="action-bar">
-	</ActionBar>
-	
-	<StackLayout *ngIf="hero">
-	  <Label text="ID: {{hero.id}}" class="h1 text-center"></Label>
-	  <TextField [(ngModel)]="hero.name" hint="name" class="input input-border"></TextField>
-	  
-	  <Button text="Go Back" (tap)="goBack()" class="btn btn-primary"></Button>
-	  <Button text="Save" (tap)="save()" class="btn btn-primary"></Button>
-	</StackLayout>
-	```
-	
-	<!--1. Update the stylesheet
+```html
+<ActionBar title="{{hero?.name | uppercase}} Details" icon="" class="action-bar">
+</ActionBar>
 
-	**hero-detail.component.tns.css**
-	
-	```css
-	//TODO: need the CSS here
-	```
--->
+<StackLayout *ngIf="hero">
+  <Label text="ID: {{hero.id}}" class="h1 text-center"></Label>
+  <TextField [(ngModel)]="hero.name" hint="name" class="input input-border"></TextField>
+  
+  <Button text="Go Back" (tap)="goBack()" class="btn btn-primary"></Button>
+  <Button text="Save" (tap)="save()" class="btn btn-primary"></Button>
+</StackLayout>
+```
 
-1. Test the component
+1. Update the stylesheet
 
-	Run the app and navigate to a hero, navigate back and then navigate to another hero. This should look something like this:
-	
-	> TODO: add a demo GIF 
+**hero-detail.component.tns.css**
+
+```css
+.container {
+  background-color: #EDECF2;
+}
+
+.main-name {
+  background-color: #2A48CD;
+  font-size: 36;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  padding: 0 0 15 0;
+}
+
+.grid {
+  margin: 30;
+}
+
+.circle {
+  background-color: #C6D7FE;
+  color: #2A48CD;
+}
+
+.name {
+  font-size: 22;
+  font-weight: bold;
+  margin-left: 20;
+}
+
+.id-label {
+  text-align: center;
+}
+
+.name-label {
+  margin-left: 20;
+}
+
+.id-label, .name-label {
+  margin-top: 10;
+  color: #ABABAB;
+}
+
+.btn {
+  background-color: #2A48CD;
+  color: white;
+  font-weight: bold;
+  font-size: 18;
+  padding: 15 0;
+  border-radius: 25;
+}
+```
+
+1. Try out the new page
+
+Run the app and navigate to a hero and then navigate back. Repeat the first two steps several times to make sure it really works.
 
 ## Migrate DashboardComponent and HeroSearchComponent
 
 The **DashboardComponent** uses the the **HeroSearchComponent**, which means that you should migrate both of the components at the same time.
 
-1. migrate both components
+1. Run the migration command for the two components:
 
-	```bash
-	ng g migrate-component --name=dashboard
-	ng g migrate-component --name=hero-search
-	```
+```bash
+  ng g migrate-component --name=dashboard
+  ng g migrate-component --name=hero-search
+```
 	
-1. update the navigation
+1. Update the navigation
 
-	Add a path for the **DashboardComponent** to the routes.
-	However, you don't need a path for the **HeroSearchComponent**, as it is used directly  via the **<app-hero-search>** selector.
+Add a path for the **DashboardComponent** to the routes.
+However, you don't need a path for the **HeroSearchComponent**, as it is used directly via the **<app-hero-search>** selector.
 
-	**app-routing.module.tns.ts**
+**app-routing.module.tns.ts**
 
-	```bash
-	import { DashboardComponent } from './dashboard/dashboard.component';
+```bash
+import { DashboardComponent } from './dashboard/dashboard.component';
+
+export const routes: Routes = [
+  { path: '', redirectTo: '/heroes', pathMatch: 'full' },
+  { path: 'heroes', component: HeroesComponent },
+  { path: 'detail/:id', component: HeroDetailComponent },
+  { path: 'dashboard', component: DashboardComponent },
+];
+```
+
+1. Update the NativeScript templates
+
+**dashboard.component.tns.html**
+
+```html
+<ActionBar title="Top Heroes" icon="" class="action-bar">
+</ActionBar>
+
+<GridLayout rows="*, *">
+  <ListView row="0" [items]="heroes" class="list-group">
+    <ng-template let-hero="item">
+      <Button [text]="hero.name" nsRouterLink="/detail/{{hero.id}}" class="btn btn-primary"></Button>
+    </ng-template>
+  </ListView>
+  <StackLayout row="1">
+    <app-hero-search row="1"></app-hero-search>
+  </StackLayout>
+</GridLayout>
+```
+
+**hero-search.component.tns.css**
+
+```html
+<StackLayout>
+  <Label text="Hero Search" class="h1 text-center"></Label>
+
+  <TextField #heroName
+    hint="enter hero-name"
+    autocorrect="false"
+    class="m-x-5"
+    (loaded)="heroName.text = ''"
+    (textChange)="search($event.value)">
+  </TextField>
+  <ListView [items]="heroes$ | async" class="list-group">
+    <ng-template let-hero="item">
+      <Label [text]="hero.name" nsRouterLink="/detail/{{hero.id}}" class="list-group-item"></Label>
+    </ng-template>
+  </ListView>
+</StackLayout>
+```
 	
-	export const routes: Routes = [
-	  { path: '', redirectTo: '/heroes', pathMatch: 'full' },
-	  { path: 'heroes', component: HeroesComponent },
-	  { path: 'detail/:id', component: HeroDetailComponent },
-	  { path: 'dashboard', component: DashboardComponent },
-	];
-	```
-
-1.  update the NativeScript templates
-
-	**dashboard.component.tns.html**
-
-	```html
-	<ActionBar title="Top Heroes" icon="" class="action-bar">
-	</ActionBar>
+> Here is the interesting part. You can use the `<app-hero-search>` selector for both the web and mobile apps. As the **HeroSearchComponent** is platform agnostic.
 	
-	<GridLayout rows="*, *">
-	  <ListView row="0" [items]="heroes" class="list-group">
-	    <ng-template let-hero="item">
-	      <Button [text]="hero.name" nsRouterLink="/detail/{{hero.id}}" class="btn btn-primary"></Button>
-	    </ng-template>
-	  </ListView>
-	  <StackLayout row="1">
-	    <app-hero-search row="1"></app-hero-search>
-	  </StackLayout>
-	</GridLayout>
-	```
+1. Update the NativeScript stylesheets:
 
-	**hero-search.component.tns.ts**
+**dashboard.component.tns.css**
 
-	```html
-	<StackLayout>
-	  <Label text="Hero Search" class="h1 text-center"></Label>
-	
-	  <TextField #heroName
-	    hint="enter hero-name"
-	    autocorrect="false"
-	    class="m-x-5"
-	    (loaded)="heroName.text = ''"
-	    (textChange)="search($event.value)">
-	  </TextField>
-	  <ListView [items]="heroes$ | async" class="list-group">
-	    <ng-template let-hero="item">
-	      <Label [text]="hero.name" nsRouterLink="/detail/{{hero.id}}" class="list-group-item"></Label>
-	    </ng-template>
-	  </ListView>
-	</StackLayout>
-	```
-	
-	> Here is the interesting part. You can use the `<app-hero-search>` selector for both the web and mobile apps. As the **HeroSearchComponent** is platform agnostic.
-	
-	<!--1.  update the NativeScript stylesheets-->
+```CSS
+.header {
+    font-size: 42;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin: 0 0 20 0;
+}
 
-1. Test the components
+FlexboxLayout {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: flex-start;
+    margin-top: 30;
+}
+.hero-container {
+    width: 49%;
+    border-width: 1;
+    border-color: #395ad9;
+}
 
-	At this point, your mobile app doesn't have a way to navigate to the Dashboard. The easiest way to test it, is to change the default **redirectTo** path, to `'/dashboard'`. Like this:
+.name {
+    color: white;
+    font-size: 20;
+    text-align: center;
+    margin: 10 0 20 0;
+}
 
-	**app-routing.module.tns.ts**
-	
-	```TypeScript
-	export const routes: Routes = [
-	  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-	  { path: 'heroes', component: HeroesComponent },
-	  { path: 'detail/:id', component: HeroDetailComponent },
-	  { path: 'dashboard', component: DashboardComponent },
-	];
-	```
-	
-	But, make sure to put it back, once you finished testing the app.
-	
-	Your app should look something like this:
-	> TODO: add a demo GIF
+.circle {
+    margin-top: 20;
+}
+```
+
+**hero-search.component.tns.css**
+
+```CSS
+.search-result li {
+  border-bottom: 1px solid gray;
+  border-left: 1px solid gray;
+  border-right: 1px solid gray;
+  width:195px;
+  height: 16px;
+  padding: 5px;
+  background-color: white;
+  cursor: pointer;
+  list-style-type: none;
+}
+
+.search-result li:hover {
+  background-color: #607D8B;
+}
+
+.search-result li a {
+  color: #888;
+  display: block;
+  text-decoration: none;
+}
+
+.search-result li a:hover {
+  color: white;
+}
+.search-result li a:active {
+  color: white;
+}
+#search-box {
+  width: 200px;
+  height: 20px;
+}
+
+
+ul.search-result {
+  margin-top: 0;
+  padding-left: 0;
+}
+```
+
+1. Try out the components
+
+At this point, your mobile app doesn't have a way to navigate to the Dashboard. The easiest way to test it, is to change the default **redirectTo** path, to `'/dashboard'`. Like this:
+
+**app-routing.module.tns.ts**
+
+```TypeScript
+export const routes: Routes = [
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: 'heroes', component: HeroesComponent },
+  { path: 'detail/:id', component: HeroDetailComponent },
+  { path: 'dashboard', component: DashboardComponent },
+];
+```
+
+But, make sure to put it back, once you finished testing the app.
 
 ## SideDrawer Navigation
 
-What you are missing now is a nice way to navigate between the Heroes page and the Dashboard. This usually comes down to the choice between a  **TabView** or a **SideDrawer**.
+What you are missing now is a nice way to navigate between the Heroes page and the Dashboard. This usually comes down to the choice between **TabView** and **SideDrawer**.
 
 For the purpose of this tutorial, you will use a **SideDrawer** with a set of buttons to navigate to the Heroes page and to the Dashboard page.
 
-### Adding nativescript-ui-sidedrawer to your project
+### Adding the SideDrawer plugin
 
 To install the **NativeScript SideDrawer**, run the following command:
 
@@ -645,7 +784,7 @@ tns plugin add nativescript-ui-sidedrawer
 
 ### Update the {N} AppModule
 
-Then you need to add the **NativeScriptUISideDrawerModule** to the **NativeScript AppModule**, like this:
+Then, you need to import the **NativeScriptUISideDrawerModule** in the **NativeScript AppModule*.
 
 **app.module.tns.ts**
 
@@ -664,7 +803,7 @@ export class AppModule { }
 
 ### Add the SideDrawer
 
-Adding the SideDrawer to your project is really easy. Just like the navigation for the web project is defined in **app.component.html**, you can add the SideDrawer to **app.compoment.tns.html**, like this:
+Adding the SideDrawer to your project is really easy. Just like the navigation for the web project is defined in **app.component.html**, you can add the SideDrawer to **app.compoment.tns.html**:
 
 **app.component.tns.html**
 
@@ -721,13 +860,10 @@ export class AppComponent {
 
 Now you should be able to slide with your finger from the left of the screen, which will show the SideDrawer. When you tap on any of the buttons, it should close the drawer and navigate to that page.
 
-> TODO: add a demo GIF
-
-> ...... TO BE USED LATER ...... TO BE USED LATER ...... TO BE USED LATER ...... TO BE USED LATER
-
 # Shared Navigation
 
 ## Split Routes
+
 In this state the routes are split into two separate configurations. Which allows you to work with different navigation **routes** for web and mobile.
 
 This is why when you run a NativeScript project now, it will start by showing the **HomeComponent**.
@@ -736,12 +872,13 @@ This is why when you run a NativeScript project now, it will start by showing th
 
 > Also, if you expect your web app to have a different set of pages to your mobile app, then you could keep the routes separate. For example, your web app could have an admin screen, which might not be required in the mobile app. In this case it makes sense to have two sets of navigation configurations.
 
-The process here is that you should add navigation paths to routes array in app-routing.module.tns.ts, as you migrate each of your page components.
+The process here is that you should add navigation paths to routes array in **app-routing.module.tns.ts**, as you migrate each of your page components.
 
 ## Shared Routes
+
 However, for this project you can easily work with a single **routes** configuration.
 
-To achieve that, you need to move the **routes** configuration to a shared file, and move, import and use the shared routes.
+To achieve that, move the **routes** configuration to a shared file.
 
 ### Step 1 - Create a shared routes file.
 
